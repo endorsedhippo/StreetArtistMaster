@@ -29,7 +29,7 @@ public class PlayerIcon : MonoBehaviour {
 
     void Start()
     {
-        if (wt == null)
+        if (wt != null)
         {
             WebCamDevice[] devices = WebCamTexture.devices;
         Debug.Log("Attached Webcam(s):");

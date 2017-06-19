@@ -27,6 +27,9 @@ public class PlayerController : MonoBehaviour {
     bool canCreatePlatform = true;
     float xMovement;
     public float paintCooldown = 0;
+    bool usingKeyboard;
+    CharacterHolder.ControlScheme controls;
+    bool controlsAssigned = false;
 
     InputDevice device;
 
@@ -41,7 +44,7 @@ public class PlayerController : MonoBehaviour {
         zScale = Mathf.Abs(transform.localScale.z);
         icon = playerIcon.GetComponent<PlayerIcon>();
         icon.SetPlayerNumber(playerNumber);
-        device = InputManager.Devices[playerNumber - 1];
+        //device = InputManager.Devices[playerNumber - 1];
 
         if (direction == 0)
             direction = 1;
@@ -50,6 +53,10 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        if (!controlsAssigned)
+        {
+            AssignControls();
+        }
         paintCooldown += Time.deltaTime;
 
         if (!Pauser.paused)
@@ -62,7 +69,7 @@ public class PlayerController : MonoBehaviour {
         }
         else
         {
-            IconInputs();
+            //IconInputs();
         }
 
         //Animation paramaters
@@ -106,7 +113,8 @@ public class PlayerController : MonoBehaviour {
         //animator.SetBool("IsGrounded", grounded);
         //Jumping
         float jump;
-        if (grounded && device.Action1.WasPressed)
+        if (grounded &&
+            (usingKeyboard && Input.GetKeyDown(controls.jump)) || (!usingKeyboard && device.Action1.WasPressed))
         {
             anim.SetBool("IsJumping", true);
             //grounded = false;
@@ -119,8 +127,18 @@ public class PlayerController : MonoBehaviour {
         animator.SetBool("IsGrounded", grounded);
 
         //Movement
-        if (Mathf.Abs(device.LeftStickX.Value) > 0.2f)
+        if (!usingKeyboard && Mathf.Abs(device.LeftStickX.Value) > 0.2f)
             xMovement = device.LeftStickX.Value;
+        else if (usingKeyboard)
+        {
+            if (Input.GetKey(controls.left))
+                xMovement = -1;
+            else if
+                (Input.GetKey(controls.right))
+                xMovement = 1;
+            else
+                xMovement = 0;
+        }
         else
             xMovement = 0;
 
@@ -170,7 +188,9 @@ public class PlayerController : MonoBehaviour {
     void Platforms()
     {
         //Create platform
-        if ((canCreatePlatform && device.LeftTrigger.WasPressed || device.RightTrigger.WasPressed) && !painting && paintCooldown >= 1.5f)
+        if (canCreatePlatform && !painting && paintCooldown >= 1.5f && 
+            ((!usingKeyboard && (device.LeftTrigger.WasPressed || device.RightTrigger.WasPressed)) || 
+            (usingKeyboard && Input.GetKeyDown(controls.paint))))
         {
             painting = true;
             paintCooldown = 0f;
@@ -194,7 +214,8 @@ public class PlayerController : MonoBehaviour {
         
         animator.SetBool("IsPainting", painting);
 
-        if (!device.LeftTrigger.IsPressed && !device.RightTrigger.IsPressed && !painting)
+        if (!painting && 
+            ((!usingKeyboard && !device.LeftTrigger.IsPressed && !device.RightTrigger.IsPressed) || (usingKeyboard && !Input.GetKey(controls.paint))))
             canCreatePlatform = true;
     }
 
@@ -244,5 +265,45 @@ public class PlayerController : MonoBehaviour {
         anim.SetBool("IsJumping", false);
         anim.SetBool("IsPainting", false);
         Debug.Log("Player " + playerNumber + " wins");
+    }
+
+    void AssignControls()
+    {
+        Debug.Log("Controls assigned");
+        CharacterHolder info = GameObject.FindObjectOfType<CharacterHolder>();
+        CharacterHolder.PlayerStats[] stats = new CharacterHolder.PlayerStats[4]
+        {
+            info.player1, info.player2, info.player3, info.player4
+        };
+
+        //switch(playerNumber)
+        //{
+        //    case 1:
+        //        gameObject.SetActive(info.player1.active);
+        //        break;
+        //    case 2:
+        //        gameObject.SetActive(info.player2.active);
+        //        break;
+        //    case 3:
+        //        gameObject.SetActive(info.player3.active);
+        //        break;
+        //    case 4:
+        //        gameObject.SetActive(info.player4.active);
+        //        break;
+        //}
+
+        bool active = false;
+        foreach(CharacterHolder.PlayerStats stat in stats)
+        {
+            if (stat.colorID == playerNumber - 1)
+            {
+                controls = CharacterHolder.keyboardControls[stat.keyboardID];
+                active = true;
+            }
+        }
+        gameObject.SetActive(active);
+
+        usingKeyboard = true;
+        controlsAssigned = true;
     }
 }

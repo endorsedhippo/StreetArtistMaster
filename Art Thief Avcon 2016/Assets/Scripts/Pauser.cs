@@ -17,7 +17,7 @@ public class Pauser : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        paused = true;
+        paused = false;
         GetPlayerIcons();
         SetIconMaterials();
         pauseText = GameObject.FindGameObjectWithTag("Pause Text");
