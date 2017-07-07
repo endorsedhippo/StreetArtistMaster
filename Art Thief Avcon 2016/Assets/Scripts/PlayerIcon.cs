@@ -43,28 +43,28 @@ public class PlayerIcon : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        if (!Pauser.paused)
-        {
-            ready.enabled = false;
-            notReady.enabled = false;
-            isReady = false;
-        }
-        else
-        {
-            if (isReady)
-            {
-                ready.enabled = true;
-                notReady.enabled = false;
-            }
-            else
-            {
-                ready.enabled = false;
-                notReady.enabled = true;
-            }
-        }
+        //if (!Pauser.paused)
+        //{
+        //    ready.enabled = false;
+        //    notReady.enabled = false;
+        //    isReady = false;
+        //}
+        //else
+        //{
+        //    if (isReady)
+        //    {
+        //        ready.enabled = true;
+        //        notReady.enabled = false;
+        //    }
+        //    else
+        //    {
+        //        ready.enabled = false;
+        //        notReady.enabled = true;
+        //    }
+        //}
 
-        if (Input.GetKeyDown("0"))
-            SetToDefault();
+        //if (Input.GetKeyDown("0"))
+        //    SetToDefault();
 
     }
 

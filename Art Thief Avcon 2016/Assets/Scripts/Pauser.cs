@@ -9,18 +9,18 @@ public class Pauser : MonoBehaviour
     static Pauser p;
     static Material[] iconMaterials;
     static PlayerIcon[] playerIcons;
-    static GameObject pauseText;
+    static Text pauseText;
 
-    static float timeUntilPlay;
-    static bool waitTime = false;
+    float timeUntilPlay;
+    bool waitTime = false;
 
     // Use this for initialization
     void Start()
     {
-        paused = false;
+        paused = true;
         GetPlayerIcons();
         SetIconMaterials();
-        pauseText = GameObject.FindGameObjectWithTag("Pause Text");
+        pauseText = GameObject.FindGameObjectWithTag("Pause Text").GetComponent<Text>();
         if (p == null)
         {
             p = this;
@@ -36,32 +36,33 @@ public class Pauser : MonoBehaviour
     {
         if (paused)
         {
-            if (CheckIfReady() && !waitTime)
+            if (!waitTime)
             {
                 timeUntilPlay = Time.time + 3;
                 waitTime = true;
             }
 
-            if (!CheckIfReady() && waitTime == true)
+            if (waitTime == true && timeUntilPlay > Time.time)
             {
-                waitTime = false;
+                pauseText.text = Mathf.CeilToInt(timeUntilPlay - Time.time).ToString();
                 paused = true;
-                foreach (PlayerIcon p in playerIcons)
-                {
-                    p.SetReady(false);
-                }
+                //foreach (PlayerIcon p in playerIcons)
+                //{
+                //    p.SetReady(false);
+                //}
             }
             if (waitTime && timeUntilPlay <= Time.time)
             {
                 paused = false;
+                waitTime = false;
                 timeUntilPlay = 0;
             }
         }
 
         if (paused)
-            pauseText.SetActive(true);
+            pauseText.gameObject.SetActive(true);
         else
-            pauseText.SetActive(false);
+            pauseText.gameObject.SetActive(false);
     }
 
     void GetPlayerIcons()
@@ -98,16 +99,16 @@ public class Pauser : MonoBehaviour
 
     bool CheckIfReady()
     {
-        foreach (PlayerIcon p in playerIcons)
-        {
-            if (!p.IsReady())
-                return false;
-        }
+        //foreach (PlayerIcon p in playerIcons)
+        //{
+        //    if (!p.IsReady())
+        //        return false;
+        //}
         return true;
     }
 
     public static void ResetTimer()
     {
-        timeUntilPlay = Time.time + 3;
+        //timeUntilPlay = Time.time + 3;
     }
 }

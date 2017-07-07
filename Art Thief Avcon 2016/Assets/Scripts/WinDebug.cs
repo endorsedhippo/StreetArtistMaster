@@ -34,12 +34,12 @@ public class WinDebug : MonoBehaviour {
 
 	IEnumerator Coroutine()
 	{
-        PlayerIcon.StopWebcam();
+        //PlayerIcon.StopWebcam();
 		Time.timeScale = 0.6f;
 		yield return new WaitForSeconds (3);
 		Time.timeScale = 1;
         Pauser.SaveMaterials();
-		Application.LoadLevel ("P" + playerNumber + "_FinishScreen");
+		UnityEngine.SceneManagement.SceneManager.LoadScene("P" + playerNumber + "_FinishScreen");
 	}
 
 

@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour {
     public float airControl;
     public float delayUntilPlatform;
     public Animator anim;
+    public GameObject[] turnOffIfInactive;
 
     [Range(-1, 1)]
     public int direction;
@@ -302,6 +303,8 @@ public class PlayerController : MonoBehaviour {
             }
         }
         gameObject.SetActive(active);
+        foreach (GameObject g in turnOffIfInactive)
+            g.SetActive(active);
 
         usingKeyboard = true;
         controlsAssigned = true;
